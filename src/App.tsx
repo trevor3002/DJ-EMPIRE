@@ -3,19 +3,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
 import { useGameStore } from './game/state';
 import { NavigationTab } from './game/types';
 import { HeaderHUD } from './components/HeaderHUD';
 import { BottomNav } from './components/BottomNav';
-import { PerformView } from './components/views/PerformView';
-import { StudioView } from './components/views/StudioView';
-import { ShopView } from './components/views/ShopView';
-import { EmpireView } from './components/views/EmpireView';
-import { CareerView } from './components/views/CareerView';
+
+
+
+
+
 import { OfflineReportModal } from './components/OfflineReportModal';
 import { PWAInstallModal, usePWAInstall } from './components/PWAInstallModal';
 import { TitleScreen } from './components/TitleScreen';
+
+const PerformView = lazy(() => import('./components/views/PerformView').then((m) => ({ default: m.PerformView })));
+const StudioView = lazy(() => import('./components/views/StudioView').then((m) => ({ default: m.StudioView })));
+const ShopView = lazy(() => import('./components/views/ShopView').then((m) => ({ default: m.ShopView })));
+const EmpireView = lazy(() => import('./components/views/EmpireView').then((m) => ({ default: m.EmpireView })));
+const CareerView = lazy(() => import('./components/views/CareerView').then((m) => ({ default: m.CareerView })));
+
 
 export default function App() {
   const {
@@ -74,6 +81,7 @@ export default function App() {
       {/* 3. Main Viewport Container */}
       <main className="flex-1 w-full max-w-2xl mx-auto px-3 pt-3">
         {activeTab === 'PERFORM' && (
+          <Suspense fallback={<div className="min-h-[45vh] flex items-center justify-center text-cyan-300 text-sm">Loading section…</div>}>
           <PerformView
             state={gameState}
             onStartGig={startGig}
@@ -82,25 +90,31 @@ export default function App() {
             onUpgradeVenue={upgradeVenue}
             onTriggerDrop={triggerManualDrop}
           />
+        </Suspense>
         )}
 
         {activeTab === 'STUDIO' && (
+          <Suspense fallback={<div className="min-h-[45vh] flex items-center justify-center text-cyan-300 text-sm">Loading section…</div>}>
           <StudioView
             state={gameState}
             onStartProduction={startTrackProduction}
             onUpgradeStudioModule={upgradeStudioModule}
             onPromoteTrack={promoteTrack}
           />
+        </Suspense>
         )}
 
         {activeTab === 'SHOP' && (
+          <Suspense fallback={<div className="min-h-[45vh] flex items-center justify-center text-cyan-300 text-sm">Loading section…</div>}>
           <ShopView
             state={gameState}
             onUpgradeEquipment={upgradeEquipment}
           />
+        </Suspense>
         )}
 
         {activeTab === 'EMPIRE' && (
+          <Suspense fallback={<div className="min-h-[45vh] flex items-center justify-center text-cyan-300 text-sm">Loading section…</div>}>
           <EmpireView
             state={gameState}
             onHireStaff={hireStaff}
@@ -109,15 +123,18 @@ export default function App() {
             onManufactureMerch={manufactureMerch}
             onUnlockMerch={unlockMerchItem}
           />
+        </Suspense>
         )}
 
         {activeTab === 'CAREER' && (
+          <Suspense fallback={<div className="min-h-[45vh] flex items-center justify-center text-cyan-300 text-sm">Loading section…</div>}>
           <CareerView
             state={gameState}
             onClaimAchievement={claimAchievement}
             onClaimDailyMission={claimDailyMission}
             onResetGame={resetGame}
           />
+        </Suspense>
         )}
       </main>
 
