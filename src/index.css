@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+  }
+
+  body {
+    background-color: #090610;
+    color: #f1f5f9;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior-y: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Safe area padding utilities for iPhone 13 notch and home indicator */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
+}
+.pt-safe {
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0.5rem));
+}
+
+/* Custom animations for stage lasers, crowd bounce, and audio bars */
+@keyframes crowdBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px) scaleY(1.05);
+  }
+}
+
+@keyframes crowdBounceFast {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px) scaleY(1.08);
+  }
+}
+
+@keyframes laserSweep1 {
+  0% {
+    transform: rotate(-35deg);
+    opacity: 0.4;
+  }
+  50% {
+    transform: rotate(35deg);
+    opacity: 0.85;
+  }
+  100% {
+    transform: rotate(-35deg);
+    opacity: 0.4;
+  }
+}
+
+@keyframes laserSweep2 {
+  0% {
+    transform: rotate(35deg);
+    opacity: 0.85;
+  }
+  50% {
+    transform: rotate(-35deg);
+    opacity: 0.4;
+  }
+  100% {
+    transform: rotate(35deg);
+    opacity: 0.85;
+  }
+}
+
+@keyframes strobe {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: 0.35; }
+}
+
+@keyframes turntableSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-crowd-bounce {
+  animation: crowdBounce 0.48s ease-in-out infinite;
+}
+
+.animate-crowd-fast {
+  animation: crowdBounceFast 0.36s ease-in-out infinite;
+}
+
+.animate-laser-1 {
+  animation: laserSweep1 3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.animate-laser-2 {
+  animation: laserSweep2 2.6s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.animate-strobe {
+  animation: strobe 0.24s infinite;
+}
+
+.animate-vinyl-spin {
+  animation: turntableSpin 1.8s linear infinite;
+}
+
+/* Custom scrollbar hiding for slick mobile touch feel */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

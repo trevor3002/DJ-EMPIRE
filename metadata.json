@@ -1,0 +1,6 @@
+{
+  "name": "DJ Empire: From Bedroom to Mainstage",
+  "description": "Build a global music empire from an unknown bedroom DJ to international festival headliner in this mobile-first idle tycoon game.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
