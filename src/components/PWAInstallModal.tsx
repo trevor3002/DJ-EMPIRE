@@ -38,7 +38,7 @@ export function usePWAInstall() {
 
     // Register service worker if supported
     if ('serviceWorker' in navigator && process.env.NODE_ENV !== 'development') {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => {});
     }
 
     return () => {
