@@ -1,55 +1,51 @@
-// DJ Empire Service Worker for Offline PWA Support
-const CACHE_NAME = 'dj-empire-v1';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon.svg',
-  '/src/main.tsx',
-  '/src/index.css'
+// DJ Empire service worker. Cache only built production URLs, never TSX source files.
+const CACHE_NAME = 'dj-empire-v2';
+const APP_BASE = new URL('./', self.registration.scope);
+const APP_PATH = APP_BASE.pathname;
+const CORE_ASSETS = [
+  new URL('./', APP_BASE).href,
+  new URL('index.html', APP_BASE).href,
+  new URL('manifest.json', APP_BASE).href,
+  new URL('icon.svg', APP_BASE).href
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch(() => {
-        // Fallback if some assets fail to precache in dev
-      });
-    })
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(CORE_ASSETS))
+      .catch(() => undefined)
   );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    })
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((key) => key.startsWith('dj-empire-') && key !== CACHE_NAME)
+        .map((key) => caches.delete(key)))
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
   if (event.request.method !== 'GET') return;
-  
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.origin !== self.location.origin) return;
+
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
+    fetch(event.request).then((response) => {
+      if (response.ok && requestUrl.pathname.startsWith(APP_PATH)) {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
       }
-      return fetch(event.request).catch(() => {
-        // If offline and requesting navigation, return index.html
-        if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
-      });
+      return response;
+    }).catch(async () => {
+      const cached = await caches.match(event.request);
+      if (cached) return cached;
+      if (event.request.mode === 'navigate') {
+        return (await caches.match(new URL('index.html', APP_BASE).href)) || Response.error();
+      }
+      return Response.error();
     })
   );
 });
